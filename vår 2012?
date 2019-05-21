@@ -1,0 +1,352 @@
+// Oppgave 1g)
+
+void bubblesort(vector<int> arr){
+  int count = 0;
+  for(int i = arr.size(); i > 0; --i){
+    for (int j = 0; j < arr.size() - 1 - count; ++j){
+      if (arr[j] > arr[j+1]){
+        int temp = arr[j];
+        arr[j] = arr[j+1];
+        arr[j+1] = temp;
+      }
+    }
+    ++count;  // for hver iterasjon har vi eliminert én posisjon hvor vi vet at det ikke finnes tidligere verdier som er større. Vi går 
+              // gjennom en mindre i løkka for hver gang.
+  }
+}
+
+
+void bubblesort(vector<int>& arr){
+  int count = 0;
+  for(int i = arr.size(); i > 0; --i){
+    bool sorted = true;
+    for (int j = 0; j < arr.size() - 1 - count; ++j){
+      if (arr[j] > arr[j+1]){
+        swap(arr[j], arr[j + 1]);
+        sorted = false;
+      }
+    }
+    ++count;  // for hver iterasjon har vi eliminert én posisjon hvor vi vet at det ikke finnes tidligere verdier som er større. Vi går 
+              // gjennom en mindre i løkka for hver gang.
+    if (sorted) { return; }
+  }
+}
+
+
+
+// OPPGAVE 4
+
+int round(double d) {
+  int floorD = d; //static_cast<int>(d)
+  if (d - static_cast<double>(floorD) >= 0.5) { return floorD + 1; }
+  else { return floorD; }
+}
+
+int adjacent_find(int arr[], int first, int last) {
+  for (int i = first; i < last - 1; i++) {
+    if (arr[i] == arr[i + 1]) { return i;}
+  }
+  return -1; //kommer programmet hit innebærer det at vi ikke har funent to like eelementer
+}
+
+void print_adjacent(int arr[], int size) {
+  vector<int> adjPositions;
+  int adj = adjacent_find(arr, 0, size -1);
+  adjPositions.push_back(adj);
+  while (adj != -1 && adj != size-1) {
+    cout << arr[adj] << arr[adj+1] << " - ";
+    adj = adjacent_find(arr, adj, size -1);
+    adjPositions.push_back(adj);
+  }
+}
+
+
+void plotline(int x1, int y1, int x2, int y2) {
+  double a = static_cast(y2 - y1) / (x2 - x1);
+  for (int x = x1; x <= x2; ++x) {
+    double yD = a * x + static_cast<double> y1;
+    int y = round(yD);
+    cout << "(" << x << ", " << y << "), ";
+  }
+}
+
+//OPPGAVE 2d 2):  Hvis stigningstallet til linja er større enn 1 så må den samme x-koordinaten plottes flere ganger, mens y-koordinaten
+// kun plottes én gang for hvert punkt. Tilfellet blir altså det motsatte av slik det er illustert i figuren av oppgaven og slik vi har
+implementert koden. Vi må da kjøre en for-løkke over y-verdiene - i stedet for over x-verdiene. Vi kan håndtere dette ved å ta en test
+// av stigningstallet i starten av funksjonen. Dersom stigningstall =< 1, så iterer vi over x-verdiene, og dersom stignigstall > 1 så
+// itererer vi over y-verdiene.
+
+// 2d 3) Hvis (x2-x1) == 0, så vil vi få et problem i utregningen av stigningstallet a siden vi får 0 i nevneren. Programmet vi terminere
+// og oppgi feilmelding.
+
+// 2d 4) Implementasjonen bør ta hånd om negative stigningstall, og absoluttverdien av stigningstallet. Negative stigningstall har samme
+problemstilling angående iterering ved for-løkke.
+
+
+
+
+// OPPGAVE 3
+//a) Vi bruker unsigned char for å sikre at pixels ikke tar en negativ tallverdi. Vi ønsker tross alt at pixels har verdier mellom 0 og
+// 255. * betyr at objektet pixels er en peker, som peker til første element av de korresponderende unsigned char verdiene.
+// * betyr at vi deklarerer en pekervariabel.
+
+//b) Med bredde w og høyde h, samt 3 verdier (R, G og B) for hver piksel, trenger vi 3*w*h unsigned chars. (1 char = 2 byte? vet ikke)
+// Vi trenger w * h * 3 fordi vi skal lagre 3 char-verdier for hvert punkt.
+
+Image::Image() : width{0}, height{0}, pixels{new unsigned char} {}
+
+Image::Image(int w, int h) : width{w}, height{h}, pixels{new unsigned char[3*w*h]} {}
+
+Image::~Image() {
+  delete[] pixels;
+}
+
+void Image::setPixel(int x, int y, const Colour &c) {
+  pixels[width*3*y + x*3] = c.red;
+  pixels[width*3*y + x*3 + 1] = c.green;
+  pixels[width*3*y + x*3 + 2] = c.blue;
+}
+
+Colour Image::getPixel(int x, int y) {
+  Colour c;
+  c.red = pixels[width*3*y + x*3];
+  c.green = pixels[width*3*y + x*3 + 1];
+  c.blue = pixels[width*3*y + x*3 + 2];
+  return c;
+}
+
+// Oppgave e)   deklarasjonen const Colour &c betyr at vi sender inn en const referanse til objektet c. Vi kan da tilordne pixelverdiene
+// til verdiene av c og gjøre operasjoner, men at objektet er av typen const forsikrer at vi ikke kan gjøre endringer på selve objektet.
+// Vi sender over en referanse til en Colour-variabel i stedet for at funksjonen mottar en kopi. Siden vi ikek skal endre argument-
+// variabelen inne i funksjonen setter vi den til const.
+
+// Oppgave f)   
+
+void Image::resize(int w, int h) {
+  if (height == h && width == w) {
+    return;
+  }
+  if (w < width) { 
+    for (int i = w; i < Width; ++i) {
+      for (int j = 0; j < height; j++) {
+        delete pixel[j*3*width + w*3];
+      }
+    }
+  }
+  
+  if (h < height) {
+    for (int i = h; i < W; ++i) {
+      for (int j = 0; j < height; j++) {
+        delete pixel[j*3*width + w*3];
+      }
+    }
+  }
+  if (h > height || w > width) {
+    unsigned char* pix = new unsigned char[(w- width)*(w>width) + (h-height)*(h>height) - 1) * 3];
+  }
+}
+
+
+void Image::resize(int w, int h) {
+  if (height == h && width == w) {
+    return;
+  }
+  unsigned char* temp = new unsigned char[w*h*3];
+  
+  int minheight, minwidth;
+  if (height < h) { int minheight = height; }
+  else { int minheight = h; }
+  if (width < w) { int minwidth = width; }
+  else { int minwidth = w; }
+  for (int i = 0; i < minheight; i++) {
+    for (int j = 0; j < minwidth; j++) {
+      temp[3 * (width * i + j)] = pixels[3 * (width * i + j)];
+      temp[3 * (width * i + j) + 1] = pixels[3 * (width * i + j) + 1];
+      temp[3 * (width * i + j) + 2] = pixels[3 * (width * i + j) + 2];
+    }
+  }
+  width = w;
+  height = h;
+  delete[] pixels;  //frigjør gammel tabell
+  pixels = temp;    // setter pixels til å peke til ny tabell. VIKTIG FOR OPPGAVEN!
+}
+
+
+// OPPGAVE 4
+
+Drawing::Drawing(int width, int height, const Colour &g) : Image(width, height), bg{g} {}
+
+class Drawing: public Image{
+private:
+  Colour bg;
+  void update();
+  vector<Shape> shapes;
+  // eller:
+  vector<Rectangle*> rectangles;
+  vector<Line*> lines;
+public:
+  Drawing(int width, int height, const Colour &bg);
+  void setBackground(const Colour &c);
+  void addLine(int x1, int y1, int x2, int y2, const Colour &c);
+  void addRectangle(int x, int y, int width, int height, const Colour &c);
+  virtual void paint(Image *img);   // de arvende klassene overskriver den virtuelle funksjonen paint.
+  ~Drawing();
+};
+
+class Figure {
+private:
+public:
+  virtual void paint(Image *img) //override =0// ;
+
+class Line : Figure {
+private:
+  int x1, x2, y1, y2;
+public:
+  Line(int x1, int y1, int x2, int y2, const Colour &c);
+  void paint(Image *img);
+};
+
+class Rectangle : Figure {
+private:
+  int x, y, width, height;
+public:
+  Rectangle(int x, int y, int width, int height, const Colour &c);
+  void paint(image *img)
+};
+
+
+void Drawing::addRectangle(int x, int y, int width, int height, const Colour &c) {
+  Rectangle r{Point{x, y}, width, height};
+  r.set_fill_color(c);  // jeg er usikker på hvordan de mener jeg skal få tallverdiene til et bli en color. Bruker bare color-objektet
+  rectangles.push_back(r);
+}
+
+void Rectangle::paint(Img *img) {
+  unsigned char *p = img->pixels;
+  int w = img->getWidth();
+  int h = img->getHeight();
+  int width = this->width;
+  int height = this->getHeight();
+  point p = this->startPoint;
+  for (int i = p.x; i < p.x + width; i++) {
+    for (int j = p.y; j < p.y + height; j++) {
+      img->pixels[3*(j*img.width + i)] = this->bg.red;
+      img->pixels[3*(j*img.width + i) + 1] = this->bg.green;
+      img->pixels[3*(j*img.width + i) + 2] = this->bg.blue;
+    }
+  }
+}
+
+void Image::update() {
+  for (int i = 0; i < getWidt(); ++i) {
+    for (int j = 0; j < getHeight(); j++) {
+      setPixel(i,j, bg);
+    }
+  }
+  
+  for (auto r : rectangles) {
+    r.paint(this);
+  }
+  
+  for (auto l : lines) {
+    l.paint(this);
+  }
+}
+
+void Image::setBackground(const Colour &c) {
+  this->bg = c;   //endrer background color, bg, til c
+  this->update(); // oppdaterer ved på kalle på update. Fargen på bakgrunnen settes først, deretter tegnes objektene oppå.
+}
+
+// hvis en figur er he
+
+class outside_of_imagearea_exception{};
+
+bool drawing::isWIthin(int x1, int y1, int x2, int y2) {
+  return     (x1 > 0 && x1 < getWidth())
+          && (y1 > 0 && y1 < getHeight())
+          && (x2 > 0 && x2 < getWidth())
+          && (y1 > 0 && y1 < getHeight());
+}
+
+void Drawing::addRectangle(int x, int y, int width, int height, const Colour &c) {
+  if (isWithin(x, y, x+ width, y+ height)) {
+    Figure *f = new Rectangle(x, y, width, height, c); // jeg er usikker på hvordan de mener jeg skal få tallverdiene til et bli en color. Bruker bare color-objektet
+    f->paint(this);
+    rectangles.push_back(r);
+  }
+  else {
+    throw outside_of_imagearea_exception();
+}
+
+// OPpgave 4g) Ja det er behov for det. Vi må kunne kalle på resize(), funksjonen slik at vi kan kalle på den med objektene i figures-
+// vektoren. Dette gjør det mye enklere å kalle ved hjelp av objektet, og er mindre stress. 
+// Ja vi må redefinere resize funksjonen hvis vi ønsker at figurene automatisk skal oppdateeres etter en resize. Vi kan jo bare kalle 
+// supertypens resize først og oppdatere bildet etterpå.
+
+
+//Oppgave 4h) Nei? Det er allerede implementert en destruktør for Image-klassen, som Drawing-klassen arver fra.
+// Men gitt at vi har en vektor med Figure*-elementer så må vi vel det for å frigi minne fra vekt vektoren. 
+// Fordi vi har instansiert dynamisk allokerte Figur-objeter. Selv om vektoren slettes automatisk vil ikke objektene vi har allokert
+// slettes - det er bare pekervariablene inne i vektoren som vil slettes automatisk. 
+
+Drawing::~Drawing() {
+  for (auto f: figures) {
+    delete[] f;
+ }
+ 
+ Drawing::~Drawing() {
+ vector<Figure*>::iterator it;
+  for (it = figures.begin(); it != figures.end(); ++it) {
+    delete *it
+ }
+ 
+// 4i) Alternativ er å ha medlemsfunksjoner i Image-klassen med Drawing-objekter som parameter. 
+// Vi kunne hatt en medlemsvariabel av typen Image* i stedet. Vi bruker jo Image kun gjennom medlemsfunksjoner så det er fullt mulig.
+
+// Fordelene med arv er at vi kan implementere nye klasser som direkte kan benytte seg av Image sine medlemsfunksjoner. Dette gjør det
+// enkelt å lage klasser som arver, og hvor vi ikke må implementere medlemsfunksjoner gang etter gang, men heller benytte allerede 
+// definerte funksjoner. Det er også enkelt å fikse på funksjonene siden vi bare kan gjøre endringer i supertypen, og dermed arver alle
+// andre klasser direkte denne nye implementasjonen. 
+
+
+
+// 4j) En egnet medlemsvariabel for fargekartet er et map som inneholder en streng og korresponderende color.
+class Drawing : public Image{
+private:
+  Colour bg;
+  void update();
+  map<string, Colour> colours;
+}
+
+void Drawing::loadColourMap(const char* filename) {
+  ifstream ifs{filename};
+  if (!ifs) { cerror("Could not open file: ", filename);
+  string line;
+  while(getline(ifs, line)) {
+    sstream ss{line};
+    string colName;
+    Colour c;
+    unsigned int red, green, blue;
+    ss << colName << red << green << blue;
+    c.red = (unsigned char) red;    c.green = (unsigned char) green;    c.blue = (unsigned char) blue;
+    colours[colname] = c;
+  }
+}
+
+Drawing(int width, int height, const string& colour): Image(width, height), bg{colours[colour]} {}
+
+
+void Drawing::addRectangle(int x, int y, int width, int height, const string& color) {
+  Rectangle r{Point{x, y}, width, height};
+  r.set_fill_color(colours[color]);  // jeg er usikker på hvordan de mener jeg skal få tallverdiene til et bli en color. Bruker bare color-objektet
+  rectangles.push_back(r);
+  
+  addRectangle(x, y, width, height, colours[color]);
+} 
+  
+  
+
+
+
+
